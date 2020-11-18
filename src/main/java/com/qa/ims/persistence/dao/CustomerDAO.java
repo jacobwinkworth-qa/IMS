@@ -79,7 +79,7 @@ public class CustomerDAO implements Dao<Customer> {
 
 	/**
 	 * 
-	 * @param id The id of the <code>Customer</code> to fetch from the data source
+	 * @param id - The id of the <code>Customer</code> to fetch from the data source
 	 * @return The matching <code>Customer</code> entity or <code>null</code>
 	 */
 	public Customer readCustomer(Long id) {

@@ -1,6 +1,10 @@
 package com.qa.ims.utils;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,6 +81,22 @@ public class Utils {
 			}
 		} while (doubleInput == null);
 		return doubleInput;
+	}
+	
+	public Map<?, ?> getHashMap() {
+		String input = null;
+		Map<?, ?> mapInput = null;
+		do {
+			try {
+				input = getString();
+				mapInput = Arrays.stream(input.split(",") )
+				        .map(s -> s.split(":"))
+				        .collect(Collectors.toMap(s -> s[0].trim(), s -> s[1].trim()));
+			} catch (NumberFormatException nfe) {
+				LOGGER.info("Error - Please enter the order in the correct format");
+			}
+		} while (mapInput == null);
+		return mapInput;
 	}
 
 }
