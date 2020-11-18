@@ -18,20 +18,6 @@ public class CustomerDAO implements Dao<Customer> {
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	/**
-	 * Converts a <code>ResultSet</code> into a <code>Customer</code> entity.
-	 * 
-	 * @param resultSet The <code>ResultSet</code> returned by a JDBC query.
-	 * @return <code>Customer</code> entity.
-	 */
-	@Override
-	public Customer modelFromResultSet(ResultSet resultSet) throws SQLException {
-		Long id = resultSet.getLong("id");
-		String firstName = resultSet.getString("first_name");
-		String surname = resultSet.getString("surname");
-		return new Customer(id, firstName, surname);
-	}
-
-	/**
 	 * Reads all customers from the database
 	 * 
 	 * @return A list of customers
@@ -81,8 +67,8 @@ public class CustomerDAO implements Dao<Customer> {
 	public Customer create(Customer customer) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate("INSERT INTO customers(first_name, surname) values('" + customer.getFirstName()
-					+ "','" + customer.getSurname() + "')");
+			statement.executeUpdate(String.format("INSERT INTO customers(first_name, surname) values('%s, %s)",
+					customer.getFirstName(), customer.getSurname()));
 			return readLatest();
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -120,8 +106,9 @@ public class CustomerDAO implements Dao<Customer> {
 	public Customer update(Customer customer) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate("update customers set first_name ='" + customer.getFirstName() + "', surname ='"
-					+ customer.getSurname() + "' where id =" + customer.getId());
+			statement.executeUpdate(String.format("update customers set first_name = '%s', surname = '%s' where id = %d",
+					customer.getFirstName(), customer.getSurname(), customer.getId()));
+					
 			return readCustomer(customer.getId());
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -145,6 +132,20 @@ public class CustomerDAO implements Dao<Customer> {
 			LOGGER.error(e.getMessage());
 		}
 		return 0;
+	}
+	
+	/**
+	 * Converts a <code>ResultSet</code> into a <code>Customer</code> entity.
+	 * 
+	 * @param resultSet The <code>ResultSet</code> returned by a JDBC query.
+	 * @return <code>Customer</code> entity.
+	 */
+	@Override
+	public Customer modelFromResultSet(ResultSet resultSet) throws SQLException {
+		Long id = resultSet.getLong("id");
+		String firstName = resultSet.getString("first_name");
+		String surname = resultSet.getString("surname");
+		return new Customer(id, firstName, surname);
 	}
 
 }
