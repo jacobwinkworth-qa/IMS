@@ -67,7 +67,7 @@ public class ItemDAO implements Dao<Item> {
 	public Item create(Item item) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate(String.format("INSERT INTO items(name, value) values('%s', %d)", 
+			statement.executeUpdate(String.format("INSERT INTO items(name, value) values('%s', %.2f)", 
 					item.getName(), item.getValue()));
 			return readLatest();
 		} catch (Exception e) {
@@ -106,7 +106,7 @@ public class ItemDAO implements Dao<Item> {
 	public Item update(Item item) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate(String.format("update items set name = '%s', value = %d where id = %d",
+			statement.executeUpdate(String.format("update items set name = '%s', value = %.2f where id = %d",
 					item.getName(), item.getValue(), item.getId()));
 					
 			return readItem(item.getId());
