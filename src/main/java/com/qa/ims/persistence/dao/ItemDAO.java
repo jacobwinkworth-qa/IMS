@@ -144,7 +144,7 @@ public class ItemDAO implements Dao<Item> {
 	public Item modelFromResultSet(ResultSet resultSet) throws SQLException {
 		Long id = resultSet.getLong("id");
 		String name = resultSet.getString("name");
-		double value = resultSet.getDouble("value");
+		Double value = resultSet.getDouble("value");
 		return new Item(id, name, value);
 	}
 
