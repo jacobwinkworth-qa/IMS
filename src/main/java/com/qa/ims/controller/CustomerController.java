@@ -70,7 +70,7 @@ public class CustomerController implements CrudController<Customer> {
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
 		Customer customer = customerDAO.update(new Customer(id, firstName, surname));
-		LOGGER.info("Customer Updated");
+		LOGGER.info("Customer updated");
 		return customer;
 	}
 
