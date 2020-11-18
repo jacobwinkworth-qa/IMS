@@ -1,5 +1,11 @@
 package com.qa.ims.persistence.domain;
 
+/**
+ * Item entity.
+ * 
+ * @author Jacob Winkworth
+ *
+ */
 public class Item {
 	
 	private long id;
