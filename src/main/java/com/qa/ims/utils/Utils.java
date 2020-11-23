@@ -83,20 +83,37 @@ public class Utils {
 		return doubleInput;
 	}
 	
-	public Map<?, ?> getHashMap() {
+	public Long[] getLongArray() {
 		String input = null;
-		Map<?, ?> mapInput = null;
+		Long[] arrayInput = null;
+		
 		do {
 			try {
 				input = getString();
-				mapInput = Arrays.stream(input.split(",") )
-				        .map(s -> s.split(":"))
-				        .collect(Collectors.toMap(s -> s[0].trim(), s -> s[1].trim()));
+				arrayInput = Arrays.stream(input.split(",")).map(s -> Long.parseLong(s.trim()))
+						.toArray(Long[]::new);
 			} catch (NumberFormatException nfe) {
-				LOGGER.info("Error - Please enter the order in the correct format");
+				LOGGER.info("Error - Please enter a number array");
 			}
-		} while (mapInput == null);
-		return mapInput;
+			} while (arrayInput == null);
+		
+		return arrayInput;
 	}
+	
+//	public Map<?, ?> getHashMap() {
+//		String input = null;
+//		Map<?, ?> mapInput = null;
+//		do {
+//			try {
+//				input = getString();
+//				mapInput = Arrays.stream(input.split(",") )
+//				        .map(s -> s.split(":"))
+//				        .collect(Collectors.toMap(s -> s[0].trim(), s -> s[1].trim()));
+//			} catch (NumberFormatException nfe) {
+//				LOGGER.info("Error - Please enter the order in the correct format");
+//			}
+//		} while (mapInput == null);
+//		return mapInput;
+//	}
 
 }

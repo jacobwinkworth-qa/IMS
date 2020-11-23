@@ -11,17 +11,32 @@ public class Customer {
 	private Long id;
 	private String firstName;
 	private String surname;
+	
+	// constructors
+	
+	public Customer() {
+		this.id = 1L;
+		this.firstName = "";
+		this.surname = "";
+	}
+	
+	public Customer(Long id) {
+		this();
+		this.id = id;
+	}
 
 	public Customer(String firstName, String surname) {
-		this.setFirstName(firstName);
-		this.setSurname(surname);
+		this();
+		this.firstName = firstName;
+		this.surname = surname;
 	}
 
 	public Customer(Long id, String firstName, String surname) {
-		this.setId(id);
-		this.setFirstName(firstName);
-		this.setSurname(surname);
+		this(firstName, surname);
+		this.id = id;
 	}
+	
+	// getters and setters
 
 	public Long getId() {
 		return id;

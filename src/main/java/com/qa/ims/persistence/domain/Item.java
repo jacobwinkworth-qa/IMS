@@ -13,18 +13,31 @@ public class Item {
 	private double value;
 	
 	// constructors
+	
+	public Item() {
+		this.id = 1L;
+		this.name = "";
+		this.value = 1.0;
+	}
+	
+	public Item(Long id) {
+		this();
+		this.id = id;
+	}
+	
 	public Item(String name, double value) {
-		this.setName(name);
-		this.setValue(value);
+		this();
+		this.name = name;
+		this.value = value;
 	}
 	
 	public Item(long id, String name, double value) {
-		this.setId(id);
-		this.setName(name);
-		this.setValue(value);
+		this(name, value);
+		this.id = id;
 	}
 
 	// getters and setters
+	
 	public long getId() {
 		return id;
 	}
