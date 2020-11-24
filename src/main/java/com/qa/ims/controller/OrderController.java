@@ -57,16 +57,31 @@ public class OrderController implements CrudController<Order> {
 	 */
 	@Override
 	public Order create() {
-		LOGGER.info("Please enter a customer id");
-		Long customer_id = utils.getLong();
-		Customer customer = new Customer(customer_id);
-		LOGGER.info("Please enter an item list");
-		Long[] itemArray = utils.getLongArray();
-		ArrayList<Item> itemArrayList = new ArrayList<>();
-		Arrays.stream(itemArray)
-		.map(s -> itemArrayList.add(new Item(s)));
 		
-		System.out.println(itemArrayList.size());
+		Customer customer = null;
+		
+		do {		
+			LOGGER.info("Please enter a customer id");
+			Long customer_id = utils.getLong();
+			customer = customerDAO.readCustomer(customer_id);
+		} while (customer == null);
+		
+		
+		ArrayList<Item> itemArrayList = new ArrayList<>();;
+		Long[] itemArray;
+		
+		do {
+			
+			itemArrayList.clear();
+			
+			LOGGER.info("Please enter an item list");
+			itemArray = utils.getLongArray();
+			
+			Arrays.stream(itemArray)
+			.takeWhile(s -> itemDAO.readItem(s) != null)	// breaks if item is not in database
+			.forEach(s -> itemArrayList.add(new Item(s)));
+			
+		} while (itemArrayList.size() != itemArray.length); // continues until all items in list are added
 		
 		Order order = orderDAO.create(new Order(customer, itemArrayList));
 		LOGGER.info("Order created");
@@ -105,9 +120,9 @@ public class OrderController implements CrudController<Order> {
 			String input = utils.getString();
 			
 			Item item = null;
-			Long itemId = null;
+			Long itemId;
 			Customer customer = null;
-			Long customerId = null;
+			Long customerId;
 			
 			switch(input.toUpperCase()) {
 			
@@ -118,7 +133,8 @@ public class OrderController implements CrudController<Order> {
 					itemId = utils.getLong();
 					item = itemDAO.readItem(itemId);
 				} while (item == null);	
-				orderDAO.addLine(orderId, itemId);	
+				orderDAO.addLine(orderId, itemId);
+				LOGGER.info("Item added");
 				break;
 				
 			case "DELETE ITEM":
@@ -129,6 +145,7 @@ public class OrderController implements CrudController<Order> {
 					item = itemDAO.readItem(itemId);
 				} while (item == null);	
 				orderDAO.deleteLine(orderId, itemId);
+				LOGGER.info("Item deleted");
 				break;
 				
 			case "UPDATE CUSTOMER":
@@ -138,7 +155,8 @@ public class OrderController implements CrudController<Order> {
 					customerId = utils.getLong();
 					customer = customerDAO.readCustomer(customerId);
 				} while (customer == null);	
-				orderDAO.update(new Order(orderId, customer));	
+				orderDAO.update(new Order(orderId, customer));
+				LOGGER.info("Customer updated");
 				break;
 				
 			default:
@@ -158,8 +176,13 @@ public class OrderController implements CrudController<Order> {
 	 */
 	@Override
 	public int delete() {
-		LOGGER.info("Please enter the id of the order you would like to delete");
-		Long id = utils.getLong();
+		Order order = null;
+		Long id;
+		do {
+			LOGGER.info("Please enter the id of the order you would like to delete");
+			id = utils.getLong();
+			order = orderDAO.readOrder(id);
+		} while (order == null);
 		return orderDAO.delete(id);
 	}
 

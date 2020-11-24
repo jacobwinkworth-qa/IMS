@@ -106,7 +106,7 @@ public class CustomerDAO implements Dao<Customer> {
 	public Customer update(Customer customer) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate(String.format("update customers set first_name = '%s', surname = '%s' where id = %d",
+			statement.executeUpdate(String.format("update customers set first_name = '%s', surname = '%s' where customer_id = %d",
 					customer.getFirstName(), customer.getSurname(), customer.getId()));
 					
 			return readCustomer(customer.getId());

@@ -142,7 +142,7 @@ public class ItemDAO implements Dao<Item> {
 	 */
 	@Override
 	public Item modelFromResultSet(ResultSet resultSet) throws SQLException {
-		Long id = resultSet.getLong("item_id");
+		long id = resultSet.getLong("item_id");
 		String name = resultSet.getString("name");
 		Double value = resultSet.getDouble("value");
 		return new Item(id, name, value);

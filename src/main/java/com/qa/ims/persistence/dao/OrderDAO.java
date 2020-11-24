@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +34,15 @@ public class OrderDAO implements Dao<Order> {
 	public List<Order> readAll() {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT fk_customer_id, order_id, "
-						+ "group_concat(fk_item_id SEPARATOR ',') items "
+				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
+						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items,"
+						+ "SUM(i.value) total "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
-						+ "ON o.order_id = oi.fk_order_id "
-						+ "GROUP BY o.order_id");) {
+						+ "ON o.order_id = oi.order_id "
+						+ "INNER JOIN items i "
+						+ "ON oi.item_id = i.item_id "
+						+ "GROUP BY oi.order_id");) {
 			List<Order> orders = new ArrayList<>();
 			while (resultSet.next()) {
 				orders.add(modelFromResultSet(resultSet));
@@ -59,13 +63,16 @@ public class OrderDAO implements Dao<Order> {
 	public Order readLatest() {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT fk_customer_id, order_id, "
-						+ "group_concat(fk_item_id SEPARATOR ',') items "
+				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
+						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
+						+ "SUM(i.value) total "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
-						+ "ON o.order_id = oi.fk_order_id "
-						+ "GROUP BY o.order_id "
-						+ "ORDER BY order_id DESC LIMIT 1");) {
+						+ "ON o.order_id = oi.order_id "
+						+ "INNER JOIN items i "
+						+ "ON oi.item_id = i.item_id "
+						+ "GROUP BY oi.order_id "
+						+ "ORDER BY o.order_id DESC LIMIT 1");) {
 			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
@@ -84,12 +91,12 @@ public class OrderDAO implements Dao<Order> {
 	public Order create(Order order) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate(String.format("INSERT INTO orders(fk_customer_id) values(%d)",
+			statement.executeUpdate(String.format("INSERT INTO orders(customer_id) values(%d)",
 					order.getCustomer().getId()));
 				ArrayList<Item> items = order.getItems();
 				for (Item item : items) {
-					statement.executeUpdate(String.format("INSERT INTO orders_items(fk_order_id, fk_item_id) "
-							+ "values(last_insert_id(), %d)", order.getId(), item.getId()));
+					statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id) "
+							+ "values(last_insert_id(), %d)", item.getId()));
 				}
 			return readLatest();
 		} catch (Exception e) {
@@ -107,13 +114,16 @@ public class OrderDAO implements Dao<Order> {
 	public Order readOrder(Long id) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT fk_customer_id, order_id, "
-						+ "group_concat(fk_item_id SEPARATOR ',') items "
+				ResultSet resultSet = statement.executeQuery(String.format("SELECT o.customer_id, oi.order_id, "
+						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
+						+ "SUM(i.value) total "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
-						+ "ON o.order_id = oi.fk_order_id "
-						+ "GROUP BY order_id "
-						+ "WHERE order_id = " + id);) {
+						+ "ON o.order_id = oi.order_id "
+						+ "INNER JOIN items i "
+						+ "ON oi.item_id = i.item_id "
+						+ "WHERE o.order_id = %d "
+						+ "GROUP BY oi.order_id", id));) {
 			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
@@ -134,7 +144,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("UPDATE orders "
-					+ "SET fk_customer_id = %d WHERE order_id = %d ", order.getCustomer().getId(), order.getId()));
+					+ "SET customer_id = %d WHERE order_id = %d ", order.getCustomer().getId(), order.getId()));
 			
 			return readOrder(order.getId());
 		} catch (Exception e) {
@@ -147,7 +157,7 @@ public class OrderDAO implements Dao<Order> {
 	public Order addLine(Long orderId, Long itemId) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate(String.format("INSERT INTO orders_items(fk_order_id, fk_item_id) "
+			statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id) "
 					+ "values(%d, %d) ", orderId, itemId));
 			
 			return readOrder(orderId);
@@ -162,7 +172,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("DELETE FROM orders_items "
-					+ "WHERE fk_order_id = %d AND fk_item_id = %d) ", orderId, itemId));
+					+ "WHERE order_id = %d AND item_id = %d", orderId, itemId));
 			
 			return readOrder(orderId);
 		} catch (Exception e) {
@@ -200,18 +210,26 @@ public class OrderDAO implements Dao<Order> {
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
 		
 		// build customer
-		Long customerId = resultSet.getLong("fk_customer_id");
+		Long customerId = resultSet.getLong("customer_id");
 		Customer customer = new Customer(customerId);
 		
 		// build items
 		String itemString = resultSet.getString("items");
+		
 		ArrayList<Item> itemArrayList = new ArrayList<>();
-		Arrays.stream(itemString.split(","))
-				.map(s -> itemArrayList.add(new Item(Long.parseLong(s))));
+		Arrays.stream(itemString.split(";"))
+				.map(s -> s.split(","))
+				.forEach(s -> itemArrayList.add(new Item(Long.parseLong(s[0].trim()),
+						s[1].trim(), Double.parseDouble(s[2].trim()))));
+		
+		itemArrayList.sort(Comparator.comparing(Item::getId)); // order by item ids (fixes ordering after ORDER BY clause)
+		
+		// get total
+		Double total = resultSet.getDouble("total");
 
 		// build order
 		Long orderId = resultSet.getLong("order_id");
-		Order order = new Order(orderId, customer, itemArrayList);
+		Order order = new Order(orderId, customer, itemArrayList, total);
 		
 		return order;
 	}
