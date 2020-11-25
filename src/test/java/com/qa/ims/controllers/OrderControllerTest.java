@@ -60,7 +60,7 @@ public class OrderControllerTest {
 		order.addItem(new Item(itemArray[0]));
 		order.addItem(new Item(itemArray[1]));
 		
-		Order created = new Order(ORDER_ID, customer, new ArrayList<>(), 14.99);
+		Order created = new Order(ORDER_ID, customer, new ArrayList<>());
 		created.addItem(new Item(itemArray[0], "ball", 9.99));
 		created.addItem(new Item(itemArray[1], "shoe", 5.0));
 		
@@ -87,7 +87,7 @@ public class OrderControllerTest {
 		items.add(new Item(itemArray[0], "ball", 9.99));
 		items.add(new Item(itemArray[1], "shoe", 5.0));
 		
-		Order order = new Order(1l, customer, items, 14.99);
+		Order order = new Order(1l, customer, items);
 		orders.add(order);
 
 		Mockito.when(orderDAO.readAll()).thenReturn(orders);
@@ -99,46 +99,66 @@ public class OrderControllerTest {
 
 	@Test
 	public void testUpdate() {
-		final Long ORDER_ID = 1l;
+		final Long ORDER_ID = 1l, ITEM_ID = 3l;
+		Long customerId = 1l;
 		Long[] itemArray = new Long[] {1l, 2l};
 		
-		Customer customer = new Customer(1l);
+		Customer customer = new Customer(customerId);
 		
 		ArrayList<Item> itemArrayList = new ArrayList<>();
 		itemArrayList.add(new Item(itemArray[0], "ball", 9.99));
 		itemArrayList.add(new Item(itemArray[1], "shoe", 5.0));
 		
-		Order updated = new Order(ORDER_ID, customer, itemArrayList, 14.99);
+		Order updated = new Order(ORDER_ID, customer, itemArrayList);
 		
-		Mockito.when(utils.getLong()).thenReturn(ORDER_ID);
-		Mockito.when(orderDAO.readOrder(ORDER_ID)).thenReturn(updated);
-		
-		final Long ITEM_ID = 3l;
+		// test 'add item'
 		Item item = new Item(ITEM_ID, "bag", 10);
 		updated.addItem(item);
 		
+		Mockito.when(utils.getLong()).thenReturn(ORDER_ID, ITEM_ID);
+		Mockito.when(orderDAO.readOrder(ORDER_ID)).thenReturn(updated);
+		
 		Mockito.when(utils.getString()).thenReturn("add item");
-		Mockito.when(utils.getLong()).thenReturn(ITEM_ID);
 		Mockito.when(itemDAO.readItem(ITEM_ID)).thenReturn(item);
 		Mockito.when(orderDAO.addLine(ORDER_ID, ITEM_ID)).thenReturn(updated);
 		
 		assertEquals(updated, this.controller.update());
 		
-//		updated.removeItem(item);
-//		
-//		Mockito.when(utils.getString()).thenReturn("delete item");
-//		Mockito.when(utils.getLong()).thenReturn(ITEM_ID);
-//		Mockito.when(itemDAO.readItem(ITEM_ID)).thenReturn(item);
-//		Mockito.when(orderDAO.deleteLine(ORDER_ID, ITEM_ID)).thenReturn(updated);
-//		
-//		assertEquals(updated, this.controller.update());
+		// test 'delete item'
+		updated.removeItem(item);
+		
+		Mockito.when(utils.getLong()).thenReturn(ORDER_ID, ITEM_ID);
+		Mockito.when(orderDAO.readOrder(ORDER_ID)).thenReturn(updated);
+		
+		Mockito.when(utils.getString()).thenReturn("delete item");
+		Mockito.when(itemDAO.readItem(ITEM_ID)).thenReturn(item);
+		Mockito.when(orderDAO.deleteLine(ORDER_ID, ITEM_ID)).thenReturn(updated);
+		
+		assertEquals(updated, this.controller.update());
+		
+		// test update customer
+		customerId = 2l;
+		updated.getCustomer().setId(customerId);
+		
+		Mockito.when(utils.getLong()).thenReturn(ORDER_ID, customerId);
+		Mockito.when(orderDAO.readOrder(ORDER_ID)).thenReturn(updated);
+		
+		Mockito.when(utils.getString()).thenReturn("update customer");
+		Mockito.when(customerDAO.readCustomer(customerId)).thenReturn(customer);
+		Mockito.when(orderDAO.update(new Order(ORDER_ID, customer))).thenReturn(updated);
+		
+		assertEquals(updated, this.controller.update());
 
-		Mockito.verify(utils, Mockito.times(2)).getLong();
-		Mockito.verify(utils, Mockito.times(1)).getString();
-		Mockito.verify(orderDAO, Mockito.times(1)).readOrder(ORDER_ID);
-		Mockito.verify(itemDAO, Mockito.times(1)).readItem(ITEM_ID);
+		Mockito.verify(utils, Mockito.times(6)).getLong();
+		Mockito.verify(utils, Mockito.times(3)).getString();
+		
+		Mockito.verify(orderDAO, Mockito.times(3)).readOrder(ORDER_ID);
+		Mockito.verify(itemDAO, Mockito.times(2)).readItem(ITEM_ID);
+		Mockito.verify(customerDAO, Mockito.times(1)).readCustomer(customerId);
+		
 		Mockito.verify(orderDAO, Mockito.times(1)).addLine(ORDER_ID, ITEM_ID);
-//		Mockito.verify(orderDAO, Mockito.times(1)).deleteLine(ORDER_ID, ITEM_ID);
+		Mockito.verify(orderDAO, Mockito.times(1)).deleteLine(ORDER_ID, ITEM_ID);
+		Mockito.verify(orderDAO, Mockito.times(1)).update(new Order(ORDER_ID, customer));
 	}
 
 //	@Test

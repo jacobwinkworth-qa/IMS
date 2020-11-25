@@ -28,7 +28,7 @@ public class OrderDAOTest {
 		ArrayList<Item> items = new ArrayList<>();
 		items.add(new Item(1l, "ball", 9.99));
 		items.add(new Item(2l, "shoe", 5.0));
-		final Order created = new Order(3l, customer, items, 14.99);
+		final Order created = new Order(3l, customer, items);
 		assertEquals(created, DAO.create(created));
 	}
 
@@ -40,8 +40,8 @@ public class OrderDAOTest {
 		ArrayList<Item> items = new ArrayList<>();
 		items.add(new Item(1l, "ball", 9.99));
 		items.add(new Item(2l, "shoe", 5.0));
-		expected.add(new Order(1l, customer1, items, 14.99));
-		expected.add(new Order(2l, customer2, items, 14.99));
+		expected.add(new Order(1l, customer1, items));
+		expected.add(new Order(2l, customer2, items));
 		assertEquals(expected, DAO.readAll());
 	}
 
@@ -51,7 +51,7 @@ public class OrderDAOTest {
 		ArrayList<Item> items = new ArrayList<>();
 		items.add(new Item(1l, "ball", 9.99));
 		items.add(new Item(2l, "shoe", 5.0));
-		assertEquals(new Order(2l, customer, items, 14.99), DAO.readLatest());
+		assertEquals(new Order(2l, customer, items), DAO.readLatest());
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class OrderDAOTest {
 		ArrayList<Item> items = new ArrayList<>();
 		items.add(new Item(1l, "ball", 9.99));
 		items.add(new Item(2l, "shoe", 5.0));
-		assertEquals(new Order(ID, customer, items, 14.99), DAO.readOrder(ID));
+		assertEquals(new Order(ID, customer, items), DAO.readOrder(ID));
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class OrderDAOTest {
 		ArrayList<Item> items = new ArrayList<>();
 		items.add(new Item(1l, "ball", 9.99));
 		items.add(new Item(2l, "shoe", 5.0));
-		final Order updated = new Order(1l, customer, items, 14.99);
+		final Order updated = new Order(1l, customer, items);
 		assertEquals(updated, DAO.update(updated));
 
 	}

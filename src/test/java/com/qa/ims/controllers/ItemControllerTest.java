@@ -64,7 +64,7 @@ public class ItemControllerTest {
 
 		Mockito.when(this.utils.getLong()).thenReturn(1L);
 		Mockito.when(this.utils.getString()).thenReturn(updated.getName());
-		Mockito.when(this.utils.getDouble()).thenReturn(updated.getValue());
+		Mockito.when(this.utils.getDouble()).thenReturn(updated.getValue().doubleValue());
 		Mockito.when(this.dao.update(updated)).thenReturn(updated);
 
 		assertEquals(updated, this.controller.update());

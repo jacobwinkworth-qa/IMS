@@ -1,5 +1,8 @@
 package com.qa.ims.persistence.domain;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Item entity.
  * 
@@ -10,14 +13,14 @@ public class Item {
 	
 	private long id;
 	private String name;
-	private double value;
+	private BigDecimal value;
 	
 	// constructors
 	
 	public Item() {
 		this.id = 1l;
 		this.name = "";
-		this.value = 1.0;
+		this.value = new BigDecimal(1).setScale(2, RoundingMode.HALF_UP);
 	}
 	
 	public Item(long id) {
@@ -28,7 +31,7 @@ public class Item {
 	public Item(String name, double value) {
 		this();
 		this.name = name;
-		this.value = value;
+		this.value = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
 	}
 	
 	public Item(long id, String name, double value) {
@@ -53,24 +56,22 @@ public class Item {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public double getValue() {
+	
+	public BigDecimal getValue() {
 		return value;
 	}
 
 	public void setValue(double value) {
-		this.value = value;
+		this.value = new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(value);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
 
@@ -90,14 +91,17 @@ public class Item {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value))
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "[id:" + id + " name:" + name + " value:" + value + "]";
+		return "[id:" + id + " name:" + name + " value:" + value.toString() + "]";
 	}
 
 }

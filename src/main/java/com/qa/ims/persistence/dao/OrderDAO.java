@@ -35,7 +35,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
-						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items,"
+						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -63,7 +63,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
-						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
+						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -113,7 +113,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(String.format("SELECT o.customer_id, oi.order_id, "
-						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
+						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "

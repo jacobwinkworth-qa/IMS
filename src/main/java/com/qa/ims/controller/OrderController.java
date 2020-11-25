@@ -129,7 +129,7 @@ public class OrderController implements CrudController<Order> {
 			case "ADD ITEM":
 				isAction = true;
 				do {	
-					LOGGER.info("Please supply the id of the item you wish to add");
+					LOGGER.info("Please enter the id of the item you wish to add");
 					itemId = utils.getLong();
 					item = itemDAO.readItem(itemId);
 				} while (item == null);	
@@ -140,7 +140,7 @@ public class OrderController implements CrudController<Order> {
 			case "DELETE ITEM":
 				isAction = true;
 				do {	
-					LOGGER.info("Please supply the id of the item you wish to delete");
+					LOGGER.info("Please enter the id of the item you wish to delete");
 					itemId = utils.getLong();
 					item = itemDAO.readItem(itemId);
 				} while (item == null);	
@@ -151,7 +151,7 @@ public class OrderController implements CrudController<Order> {
 			case "UPDATE CUSTOMER":
 				isAction = true;
 				do {	
-					LOGGER.info("Please supply the new customer id");
+					LOGGER.info("Please enter the new customer id");
 					customerId = utils.getLong();
 					customer = customerDAO.readCustomer(customerId);
 				} while (customer == null);	

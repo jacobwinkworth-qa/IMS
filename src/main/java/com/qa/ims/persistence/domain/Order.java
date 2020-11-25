@@ -1,5 +1,7 @@
 package com.qa.ims.persistence.domain;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class Order {
@@ -72,8 +74,11 @@ public class Order {
 		this.items.remove(item);
 	}
 		
-	public Double getTotal() {
-		return items.stream().mapToDouble(o -> o.getValue()).sum();
+	public BigDecimal getTotal() {
+		return items.stream()
+				.map(o -> o.getValue())
+				.reduce(BigDecimal.ZERO, BigDecimal::add)
+				.setScale(2, RoundingMode.HALF_UP);
 	}
 	
 	@Override
