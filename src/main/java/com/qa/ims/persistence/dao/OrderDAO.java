@@ -36,7 +36,6 @@ public class OrderDAO implements Dao<Order> {
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
 						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items,"
-						+ "SUM(i.value) total "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -65,7 +64,6 @@ public class OrderDAO implements Dao<Order> {
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
 						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
-						+ "SUM(i.value) total "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -116,7 +114,6 @@ public class OrderDAO implements Dao<Order> {
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(String.format("SELECT o.customer_id, oi.order_id, "
 						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
-						+ "SUM(i.value) total "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -224,12 +221,10 @@ public class OrderDAO implements Dao<Order> {
 		
 		itemArrayList.sort(Comparator.comparing(Item::getId)); // order by item ids (fixes ordering after ORDER BY clause)
 		
-		// get total
-		Double total = resultSet.getDouble("total");
 
 		// build order
 		Long orderId = resultSet.getLong("order_id");
-		Order order = new Order(orderId, customer, itemArrayList, total);
+		Order order = new Order(orderId, customer, itemArrayList);
 		
 		return order;
 	}
