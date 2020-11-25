@@ -96,8 +96,8 @@ public class OrderController implements CrudController<Order> {
 	@Override
 	public Order update() {
 		
-		Order order = null;
 		Long orderId = null;
+		Order order = null;
 		
 		do {	
 			LOGGER.info("Please enter the id of the order you would like to update");
