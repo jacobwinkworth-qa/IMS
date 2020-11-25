@@ -1,8 +1,8 @@
 package com.qa.ims.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -83,6 +83,7 @@ public class Utils {
 		return doubleInput;
 	}
 	
+	// gets long array from user input
 	public Long[] getLongArray() {
 		String input = null;
 		Long[] arrayInput = null;
@@ -99,6 +100,27 @@ public class Utils {
 		
 		return arrayInput;
 	}
+	
+	public <T> List<T> getArrayList(T[] t) {
+		List<T> list = new ArrayList<T>();
+		Arrays.stream(t).forEach(list::add);
+		return list;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 	
 //	public Map<?, ?> getHashMap() {
 //		String input = null;
