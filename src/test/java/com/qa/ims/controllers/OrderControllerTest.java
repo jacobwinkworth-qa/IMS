@@ -161,17 +161,17 @@ public class OrderControllerTest {
 		Mockito.verify(orderDAO, Mockito.times(1)).update(new Order(ORDER_ID, customer));
 	}
 
-//	@Test
-//	public void testDelete() {
-//		final long ID = 1L;
-//
-//		Mockito.when(utils.getLong()).thenReturn(ID);
-//		Mockito.when(dao.delete(ID)).thenReturn(1);
-//
-//		assertEquals(1L, this.controller.delete());
-//
-//		Mockito.verify(utils, Mockito.times(1)).getLong();
-//		Mockito.verify(dao, Mockito.times(1)).delete(ID);
-//	}
+	@Test
+	public void testDelete() {
+		final long ID = 1L;
+
+		Mockito.when(utils.getLong()).thenReturn(ID);
+		Mockito.when(orderDAO.delete(ID)).thenReturn(1);
+
+		assertEquals(1L, this.controller.delete());
+
+		Mockito.verify(utils, Mockito.times(1)).getLong();
+		Mockito.verify(orderDAO, Mockito.times(1)).delete(ID);
+	}
 
 }
