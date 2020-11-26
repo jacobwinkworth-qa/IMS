@@ -48,6 +48,7 @@ public class CustomerDAO implements Dao<Customer> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM customers ORDER BY customer_id DESC LIMIT 1");) {
+			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -85,6 +86,7 @@ public class CustomerDAO implements Dao<Customer> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM customers where customer_id = " + id);) {
+			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -139,10 +141,6 @@ public class CustomerDAO implements Dao<Customer> {
 	 */
 	@Override
 	public Customer modelFromResultSet(ResultSet resultSet) throws SQLException {
-		
-		if (resultSet.next() == false) {
-			return null;
-		}
 		
 		Long id = resultSet.getLong("customer_id");
 		String firstName = resultSet.getString("first_name");

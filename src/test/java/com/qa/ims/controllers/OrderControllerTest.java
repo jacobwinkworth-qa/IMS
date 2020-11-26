@@ -3,6 +3,7 @@ package com.qa.ims.controllers;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -44,25 +45,25 @@ public class OrderControllerTest {
 		final Long ORDER_ID = 1l, CUSTOMER_ID = 1l;
 		Long[] itemArray = new Long[] {1l, 2l};
 		
-		ArrayList<Item> itemArrayList = new ArrayList<>();
-		itemArrayList.add(new Item(itemArray[0]));
-		itemArrayList.add(new Item(itemArray[1]));
+		HashMap<Item, Long> itemArrayList = new HashMap<>();
+		itemArrayList.put(new Item(itemArray[0]), 1l);
+		itemArrayList.put(new Item(itemArray[1]), 1l);
 
 		Mockito.when(utils.getLong()).thenReturn(CUSTOMER_ID);
 		Customer customer = new Customer(CUSTOMER_ID);
 		
 		Mockito.when(customerDAO.readCustomer(CUSTOMER_ID)).thenReturn(customer);
-		Mockito.when(utils.getLongArray()).thenReturn(itemArray);
+		Mockito.when(utils.getString()).thenReturn("1:1,2:1");
 		Mockito.when(itemDAO.readItem(itemArray[0])).thenReturn(new Item(itemArray[0]));
 		Mockito.when(itemDAO.readItem(itemArray[1])).thenReturn(new Item(itemArray[1]));
 		
-		Order order = new Order(customer, new ArrayList<>());
-		order.addItem(new Item(itemArray[0]));
-		order.addItem(new Item(itemArray[1]));
+		Order order = new Order(customer, new HashMap<>());
+		order.addItem(new Item(itemArray[0]), 1l);
+		order.addItem(new Item(itemArray[1]), 1l);
 		
-		Order created = new Order(ORDER_ID, customer, new ArrayList<>());
-		created.addItem(new Item(itemArray[0], "ball", 9.99));
-		created.addItem(new Item(itemArray[1], "shoe", 5.0));
+		Order created = new Order(ORDER_ID, customer, new HashMap<>());
+		created.addItem(new Item(itemArray[0], "ball", 9.99), 1l);
+		created.addItem(new Item(itemArray[1], "shoe", 5.0), 1l);
 		
 		Mockito.when(orderDAO.create(order)).thenReturn(created);
 
@@ -70,7 +71,7 @@ public class OrderControllerTest {
 
 		Mockito.verify(utils, Mockito.times(1)).getLong();
 		Mockito.verify(customerDAO, Mockito.times(1)).readCustomer(CUSTOMER_ID);
-		Mockito.verify(utils, Mockito.times(1)).getLongArray();
+		Mockito.verify(utils, Mockito.times(1)).getString();
 		Mockito.verify(itemDAO, Mockito.times(1)).readItem(itemArray[0]);
 		Mockito.verify(itemDAO, Mockito.times(1)).readItem(itemArray[1]);
 		Mockito.verify(orderDAO, Mockito.times(1)).create(order);
@@ -83,9 +84,9 @@ public class OrderControllerTest {
 		Customer customer = new Customer(1l);
 		Long[] itemArray = new Long[] {1l, 2l};
 		
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(new Item(itemArray[0], "ball", 9.99));
-		items.add(new Item(itemArray[1], "shoe", 5.0));
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(itemArray[0], "ball", 9.99), 1l);
+		items.put(new Item(itemArray[1], "shoe", 5.0), 1l);
 		
 		Order order = new Order(1l, customer, items);
 		orders.add(order);
@@ -105,22 +106,23 @@ public class OrderControllerTest {
 		
 		Customer customer = new Customer(customerId);
 		
-		ArrayList<Item> itemArrayList = new ArrayList<>();
-		itemArrayList.add(new Item(itemArray[0], "ball", 9.99));
-		itemArrayList.add(new Item(itemArray[1], "shoe", 5.0));
+		HashMap<Item, Long> itemMap = new HashMap<>();
+		itemMap.put(new Item(itemArray[0], "ball", 9.99), 1l);
+		itemMap.put(new Item(itemArray[1], "shoe", 5.0), 1l);
 		
-		Order updated = new Order(ORDER_ID, customer, itemArrayList);
+		Order updated = new Order(ORDER_ID, customer, itemMap);
 		
 		// test 'add item'
 		Item item = new Item(ITEM_ID, "bag", 10);
-		updated.addItem(item);
+		final Long QUANTITY = 1l;
+		updated.addItem(item, QUANTITY);
 		
-		Mockito.when(utils.getLong()).thenReturn(ORDER_ID, ITEM_ID);
+		Mockito.when(utils.getLong()).thenReturn(ORDER_ID, ITEM_ID, QUANTITY);
 		Mockito.when(orderDAO.readOrder(ORDER_ID)).thenReturn(updated);
 		
 		Mockito.when(utils.getString()).thenReturn("add item");
 		Mockito.when(itemDAO.readItem(ITEM_ID)).thenReturn(item);
-		Mockito.when(orderDAO.addLine(ORDER_ID, ITEM_ID)).thenReturn(updated);
+		Mockito.when(orderDAO.addLine(ORDER_ID, ITEM_ID, QUANTITY)).thenReturn(updated);
 		
 		assertEquals(updated, this.controller.update());
 		
@@ -149,14 +151,14 @@ public class OrderControllerTest {
 		
 		assertEquals(updated, this.controller.update());
 
-		Mockito.verify(utils, Mockito.times(6)).getLong();
+		Mockito.verify(utils, Mockito.times(7)).getLong();
 		Mockito.verify(utils, Mockito.times(3)).getString();
 		
 		Mockito.verify(orderDAO, Mockito.times(3)).readOrder(ORDER_ID);
 		Mockito.verify(itemDAO, Mockito.times(2)).readItem(ITEM_ID);
 		Mockito.verify(customerDAO, Mockito.times(1)).readCustomer(customerId);
 		
-		Mockito.verify(orderDAO, Mockito.times(1)).addLine(ORDER_ID, ITEM_ID);
+		Mockito.verify(orderDAO, Mockito.times(1)).addLine(ORDER_ID, ITEM_ID, QUANTITY);
 		Mockito.verify(orderDAO, Mockito.times(1)).deleteLine(ORDER_ID, ITEM_ID);
 		Mockito.verify(orderDAO, Mockito.times(1)).update(new Order(ORDER_ID, customer));
 	}

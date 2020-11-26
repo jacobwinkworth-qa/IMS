@@ -12,14 +12,14 @@ VALUES ('shoe', 5.0);
 
 INSERT INTO orders (customer_id)
 VALUES (1);
-INSERT INTO orders_items (order_id, item_id)
-VALUES (last_insert_id(), 1);
-INSERT INTO orders_items (order_id, item_id)
-VALUES (last_insert_id(), 2);
+INSERT INTO orders_items (order_id, item_id, quantity)
+VALUES (last_insert_id(), 1, 1);
+INSERT INTO orders_items (order_id, item_id, quantity)
+VALUES (last_insert_id(), 2, 1);
 
 INSERT INTO orders (customer_id)
 VALUES (2);
-INSERT INTO orders_items (order_id, item_id)
-VALUES (last_insert_id(), 1);
-INSERT INTO orders_items (order_id, item_id)
-VALUES (last_insert_id(), 2);
+INSERT INTO orders_items (order_id, item_id, quantity)
+VALUES (last_insert_id(), 1, 1);
+INSERT INTO orders_items (order_id, item_id, quantity)
+VALUES (last_insert_id(), 2, 1);

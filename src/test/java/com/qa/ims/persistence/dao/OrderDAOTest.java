@@ -3,6 +3,7 @@ package com.qa.ims.persistence.dao;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Before;
@@ -25,9 +26,9 @@ public class OrderDAOTest {
 	@Test
 	public void testCreate() {
 		Customer customer = new Customer(1l);
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(new Item(1l, "ball", 9.99));
-		items.add(new Item(2l, "shoe", 5.0));
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		items.put(new Item(2l, "shoe", 5.0), 1l);
 		final Order created = new Order(3l, customer, items);
 		assertEquals(created, DAO.create(created));
 	}
@@ -37,9 +38,9 @@ public class OrderDAOTest {
 		List<Order> expected = new ArrayList<>();
 		Customer customer1 = new Customer(1l);
 		Customer customer2 = new Customer(2l);
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(new Item(1l, "ball", 9.99));
-		items.add(new Item(2l, "shoe", 5.0));
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		items.put(new Item(2l, "shoe", 5.0), 1l);
 		expected.add(new Order(1l, customer1, items));
 		expected.add(new Order(2l, customer2, items));
 		assertEquals(expected, DAO.readAll());
@@ -48,9 +49,9 @@ public class OrderDAOTest {
 	@Test
 	public void testReadLatest() {
 		Customer customer = new Customer(2l);
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(new Item(1l, "ball", 9.99));
-		items.add(new Item(2l, "shoe", 5.0));
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		items.put(new Item(2l, "shoe", 5.0), 1l);
 		assertEquals(new Order(2l, customer, items), DAO.readLatest());
 	}
 
@@ -58,18 +59,18 @@ public class OrderDAOTest {
 	public void testRead() {
 		final long ID = 1l;
 		Customer customer = new Customer(1l);
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(new Item(1l, "ball", 9.99));
-		items.add(new Item(2l, "shoe", 5.0));
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		items.put(new Item(2l, "shoe", 5.0), 1l);
 		assertEquals(new Order(ID, customer, items), DAO.readOrder(ID));
 	}
 
 	@Test
 	public void testUpdate() {
 		Customer customer = new Customer(2l);
-		ArrayList<Item> items = new ArrayList<>();
-		items.add(new Item(1l, "ball", 9.99));
-		items.add(new Item(2l, "shoe", 5.0));
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		items.put(new Item(2l, "shoe", 5.0), 1l);
 		final Order updated = new Order(1l, customer, items);
 		assertEquals(updated, DAO.update(updated));
 

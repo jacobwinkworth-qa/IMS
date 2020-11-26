@@ -72,6 +72,7 @@ public class OrderDAO implements Dao<Order> {
 						+ "ON oi.item_id = i.item_id "
 						+ "GROUP BY oi.order_id "
 						+ "ORDER BY o.order_id DESC LIMIT 1");) {
+			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -121,6 +122,7 @@ public class OrderDAO implements Dao<Order> {
 						+ "ON oi.item_id = i.item_id "
 						+ "WHERE o.order_id = %d "
 						+ "GROUP BY oi.order_id", id));) {
+			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -201,10 +203,6 @@ public class OrderDAO implements Dao<Order> {
 	 */
 	@Override
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
-		
-		if (resultSet.next() == false) {
-			return null;
-		}
 		
 		// build customer
 		Long customerId = resultSet.getLong("customer_id");

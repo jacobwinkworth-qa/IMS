@@ -48,6 +48,7 @@ public class ItemDAO implements Dao<Item> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM items ORDER BY item_id DESC LIMIT 1");) {
+			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -85,6 +86,7 @@ public class ItemDAO implements Dao<Item> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM items where item_id = " + id);) {
+			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -106,7 +108,6 @@ public class ItemDAO implements Dao<Item> {
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("update items set name = '%s', value = %.2f where item_id = %d",
 					item.getName(), item.getValue(), item.getId()));
-					
 			return readItem(item.getId());
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -140,10 +141,6 @@ public class ItemDAO implements Dao<Item> {
 	 */
 	@Override
 	public Item modelFromResultSet(ResultSet resultSet) throws SQLException {
-		
-		if (resultSet.next() == false) {
-			return null;
-		}
 		
 		long id = resultSet.getLong("item_id");
 		String name = resultSet.getString("name");
