@@ -3,19 +3,20 @@ package com.qa.ims.persistence.domain;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Order {
 	
 	private long id;
 	private Customer customer;
-	private ArrayList<Item> items;
+	private HashMap<Item, Long> items;
 	
 	// constructors
 	
 	public Order() {
 		this.id = 1L;
 		this.customer = new Customer();
-		this.items = new ArrayList<>();
+		this.items = new HashMap<>();
 	}
 	
 	public Order(Long id) {
@@ -29,13 +30,13 @@ public class Order {
 		this.customer = customer;
 	}
 	
-	public Order(Customer customer, ArrayList<Item> items) {
+	public Order(Customer customer, HashMap<Item, Long> items) {
 		this();
 		this.customer = customer;
 		this.items = items;
 	}
 	
-	public Order(long id, Customer customer, ArrayList<Item> items) {
+	public Order(long id, Customer customer, HashMap<Item, Long> items) {
 		this(customer, items);
 		this.id = id;
 	}
@@ -58,16 +59,16 @@ public class Order {
 		this.customer = customer;
 	}
 
-	public ArrayList<Item> getItems() {
+	public HashMap<Item, Long> getItems() {
 		return items;
 	}
 
-	public void setItems(ArrayList<Item> items) {
+	public void setItems(HashMap<Item, Long> items) {
 		this.items = items;
 	}
 	
-	public void addItem(Item item) {
-		this.items.add(item);
+	public void addItem(Item item, Long quanity) {
+		this.items.put(item, quanity);
 	}
 	
 	public void removeItem(Item item) {
@@ -75,8 +76,8 @@ public class Order {
 	}
 		
 	public BigDecimal getTotal() {
-		return items.stream()
-				.map(o -> o.getValue())
+		return items.entrySet().stream()
+				.map(o -> o.getKey().getValue().multiply(new BigDecimal(o.getValue())))
 				.reduce(BigDecimal.ZERO, BigDecimal::add)
 				.setScale(2, RoundingMode.HALF_UP);
 	}

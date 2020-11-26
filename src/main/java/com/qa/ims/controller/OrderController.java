@@ -1,7 +1,7 @@
 package com.qa.ims.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -67,23 +67,31 @@ public class OrderController implements CrudController<Order> {
 		} while (customer == null);
 		
 		
-		ArrayList<Item> itemArrayList = new ArrayList<>();;
-		Long[] itemArray;
+		HashMap<Item, Long> itemMap = new HashMap<>();
+		String itemString;
+		String[] itemArray;
 		
 		do {
 			
-			itemArrayList.clear();
+			itemMap.clear();
 			
-			LOGGER.info("Please enter an item list");
-			itemArray = utils.getLongArray();
+			LOGGER.info("Please enter an item list [<item>:<quantity>,<item>:<quantity>...]");
+			itemString = utils.getString();
+			itemArray = itemString.split(",");
 			
-			Arrays.stream(itemArray)
-			.takeWhile(s -> itemDAO.readItem(s) != null)	// breaks if item is not in database
-			.forEach(s -> itemArrayList.add(new Item(s)));
+			if (itemString.matches("^([0-9]+:[0-9]+)+(,[0-9]+:[0-9]+)*$")) {
+				
+				Arrays.stream(itemArray)
+				.map(s -> s.split(":"))
+				.takeWhile(s -> itemDAO.readItem(Long.parseLong(s[0].trim())) != null)	// breaks if item is not in database
+				.forEach(s -> itemMap.put(new Item(Long.parseLong(s[0].trim())),
+						Long.parseLong(s[1].trim())));
+				
+			}
 			
-		} while (itemArrayList.size() != itemArray.length); // continues until all items in list are added
+		} while (itemMap.size() != itemArray.length); // continues until all items in list are added
 		
-		Order order = orderDAO.create(new Order(customer, itemArrayList));
+		Order order = orderDAO.create(new Order(customer, itemMap));
 		LOGGER.info("Order created");
 		return order;
 	}
@@ -176,11 +184,8 @@ public class OrderController implements CrudController<Order> {
 	 */
 	@Override
 	public int delete() {
-		Order order = null;
-		Long id;
 		LOGGER.info("Please enter the id of the order you would like to delete");
-		id = utils.getLong();
-		order = orderDAO.readOrder(id);
+		Long id = utils.getLong();
 		return orderDAO.delete(id);
 	}
 
