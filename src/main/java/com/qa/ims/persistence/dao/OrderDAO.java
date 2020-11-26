@@ -149,11 +149,11 @@ public class OrderDAO implements Dao<Order> {
 		return null;
 	}
 	
-	public Order addLine(Long orderId, Long itemId) {
+	public Order addLine(Long orderId, Long itemId, Long quantity) {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
-			statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id) "
-					+ "values(%d, %d) ", orderId, itemId));		
+			statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id, quantity) "
+					+ "values(%d, %d, %d) ", orderId, itemId, quantity));		
 			return readOrder(orderId);
 		} catch (Exception e) {
 			LOGGER.debug(e);

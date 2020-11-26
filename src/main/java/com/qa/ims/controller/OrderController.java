@@ -141,7 +141,10 @@ public class OrderController implements CrudController<Order> {
 					itemId = utils.getLong();
 					item = itemDAO.readItem(itemId);
 				} while (item == null);	
-				orderDAO.addLine(orderId, itemId);
+				
+				LOGGER.info("Please enter the quantity of the item you wish to add");
+				Long quantity = utils.getLong();
+				orderDAO.addLine(orderId, itemId, quantity);
 				LOGGER.info("Item added");
 				break;
 				
