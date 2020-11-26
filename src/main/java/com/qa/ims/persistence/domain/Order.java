@@ -1,19 +1,19 @@
 package com.qa.ims.persistence.domain;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Order {
 	
 	private long id;
 	private Customer customer;
-	private ArrayList<Item> items;
+	private HashMap<Item, Long> items;
 	
 	// constructors
 	
 	public Order() {
 		this.id = 1L;
 		this.customer = new Customer();
-		this.items = new ArrayList<>();
+		this.items = new HashMap<>();
 	}
 	
 	public Order(Long id) {
@@ -27,13 +27,13 @@ public class Order {
 		this.customer = customer;
 	}
 	
-	public Order(Customer customer, ArrayList<Item> items) {
+	public Order(Customer customer, HashMap<Item, Long> items) {
 		this();
 		this.customer = customer;
 		this.items = items;
 	}
 	
-	public Order(long id, Customer customer, ArrayList<Item> items) {
+	public Order(long id, Customer customer, HashMap<Item, Long> items) {
 		this(customer, items);
 		this.id = id;
 	}
@@ -56,16 +56,17 @@ public class Order {
 		this.customer = customer;
 	}
 
-	public ArrayList<Item> getItems() {
+	public HashMap<Item, Long> getItems() {
 		return items;
 	}
 
-	public void setItems(ArrayList<Item> items) {
+	public void setItems(HashMap<Item, Long> items) {
 		this.items = items;
 	}
 	
 	public Double getTotal() {
-		return items.stream().mapToDouble(o -> o.getValue()).sum();
+		return items.entrySet().stream()
+				.mapToDouble(o -> o.getKey().getValue() * o.getValue()).sum();
 	}
 	
 	@Override

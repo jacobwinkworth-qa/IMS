@@ -107,21 +107,6 @@ public class Utils {
 		return list;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
 //	public Map<?, ?> getHashMap() {
 //		String input = null;
 //		Map<?, ?> mapInput = null;

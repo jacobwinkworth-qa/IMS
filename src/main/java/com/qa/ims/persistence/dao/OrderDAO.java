@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
-						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items,"
+						+ "GROUP_CONCAT(i.item_id, ',', i.name, ',', i.value, ',', oi.quantity SEPARATOR ';') items "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -63,7 +64,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT o.customer_id, oi.order_id, "
-						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
+						+ "GROUP_CONCAT(i.item_id, ',', i.name, ',', i.value, ',', oi.quantity SEPARATOR ';') items "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -71,7 +72,6 @@ public class OrderDAO implements Dao<Order> {
 						+ "ON oi.item_id = i.item_id "
 						+ "GROUP BY oi.order_id "
 						+ "ORDER BY o.order_id DESC LIMIT 1");) {
-			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -91,10 +91,10 @@ public class OrderDAO implements Dao<Order> {
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("INSERT INTO orders(customer_id) values(%d)",
 					order.getCustomer().getId()));
-				ArrayList<Item> items = order.getItems();
-				for (Item item : items) {
-					statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id) "
-							+ "values(last_insert_id(), %d)", item.getId()));
+				HashMap<Item, Long> items = order.getItems();
+				for (Entry<Item, Long> entry : items.entrySet()) {
+					statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id, quantity) "
+							+ "values(last_insert_id(), %d, %d)", entry.getKey().getId(), entry.getValue()));
 				}
 			return readLatest();
 		} catch (Exception e) {
@@ -113,7 +113,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(String.format("SELECT o.customer_id, oi.order_id, "
-						+ "GROUP_CONCAT(i.item_id, ', ', i.name, ', ', i.value SEPARATOR '; ') items, "
+						+ "GROUP_CONCAT(i.item_id, ',', i.name, ',', i.value, ',', oi.quantity SEPARATOR ';') items "
 						+ "FROM orders o "
 						+ "INNER JOIN orders_items oi "
 						+ "ON o.order_id = oi.order_id "
@@ -121,7 +121,6 @@ public class OrderDAO implements Dao<Order> {
 						+ "ON oi.item_id = i.item_id "
 						+ "WHERE o.order_id = %d "
 						+ "GROUP BY oi.order_id", id));) {
-			resultSet.next();
 			return modelFromResultSet(resultSet);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -141,8 +140,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("UPDATE orders "
-					+ "SET customer_id = %d WHERE order_id = %d ", order.getCustomer().getId(), order.getId()));
-			
+					+ "SET customer_id = %d WHERE order_id = %d ", order.getCustomer().getId(), order.getId()));	
 			return readOrder(order.getId());
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -155,8 +153,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("INSERT INTO orders_items(order_id, item_id) "
-					+ "values(%d, %d) ", orderId, itemId));
-			
+					+ "values(%d, %d) ", orderId, itemId));		
 			return readOrder(orderId);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -169,8 +166,7 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();) {
 			statement.executeUpdate(String.format("DELETE FROM orders_items "
-					+ "WHERE order_id = %d AND item_id = %d", orderId, itemId));
-			
+					+ "WHERE order_id = %d AND item_id = %d", orderId, itemId));			
 			return readOrder(orderId);
 		} catch (Exception e) {
 			LOGGER.debug(e);
@@ -206,25 +202,37 @@ public class OrderDAO implements Dao<Order> {
 	@Override
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
 		
+		if (resultSet.next() == false) {
+			return null;
+		}
+		
 		// build customer
 		Long customerId = resultSet.getLong("customer_id");
 		Customer customer = new Customer(customerId);
 		
 		// build items
-		String itemString = resultSet.getString("items");
+		String[] itemArray = resultSet.getString("items").split(";");
 		
-		ArrayList<Item> itemArrayList = new ArrayList<>();
-		Arrays.stream(itemString.split(";"))
+		HashMap<Item, Long> itemMap = new HashMap<>();
+		
+		Arrays.stream(itemArray)
 				.map(s -> s.split(","))
-				.forEach(s -> itemArrayList.add(new Item(Long.parseLong(s[0].trim()),
-						s[1].trim(), Double.parseDouble(s[2].trim()))));
+				.forEach(s -> itemMap.put(
+						new Item(Long.parseLong(s[0]), s[1], Double.parseDouble(s[2])), 
+						Long.parseLong(s[3])));
 		
-		itemArrayList.sort(Comparator.comparing(Item::getId)); // order by item ids (fixes ordering after ORDER BY clause)
+		HashMap<Item, Long> sortedItemMap = itemMap.entrySet()
+				.stream()
+                .sorted(Comparator.comparingLong(e -> e.getKey().getId()))
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (left, right) -> left,
+                        LinkedHashMap::new));	// sort map after ordering issue from ORDER_BY clause
 		
 
 		// build order
 		Long orderId = resultSet.getLong("order_id");
-		Order order = new Order(orderId, customer, itemArrayList);
+		Order order = new Order(orderId, customer, sortedItemMap);
 		
 		return order;
 	}

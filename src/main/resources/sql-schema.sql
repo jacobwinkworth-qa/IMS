@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS items (
 CREATE TABLE IF NOT EXISTS orders_items (
 	order_id INT(10) NOT NULL,
 	item_id INT(10) NOT NULL,
+	quantity INT(10) NOT NULL,
 	FOREIGN KEY (order_id) REFERENCES orders(order_id),
 	FOREIGN KEY (item_id) REFERENCES items(item_id)
 );
