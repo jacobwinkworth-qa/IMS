@@ -1,7 +1,7 @@
-Coverage: 34%
+Coverage: 79%
 # Project Title
 
-One Paragraph of project description goes here
+The overarching objective of this project was to develop a generic inventory management system for a single, centralised store. The project required the usage of all fundamental technologies taught throughout our first five weeks at the academy and exercised our management skills diligently.  
 
 ## Getting Started
 
@@ -9,27 +9,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+Latest Java versioning
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
+No installation is required.
 
 End with an example of getting some data out of the system or using it for a little demo
 
@@ -75,6 +59,7 @@ We use [SemVer](http://semver.org/) for versioning.
 ## Authors
 
 * **Chris Perrins** - *Initial work* - [christophperrins](https://github.com/christophperrins)
+* **Jacob Winkworth** - *Continuation* - [jacobwinkworth](https://github.com/jacobwinkworth-qa)
 
 ## License
 
