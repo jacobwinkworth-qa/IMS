@@ -9,49 +9,28 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Latest Java versioning (Java 14)
-A local or cloud-hosted MySQL 5.7 server: the db.url variable of the db.properties file in both the src/main/resources and src/test/resources should be changed to fit this.
+* Latest Java versioning (Java 14)
+* A local or cloud-hosted MySQL 5.7 server:
+  * The db.url variable of the db.properties file in both the src/main/resources and src/test/resources should be changed to fit this.
+* Eclipse IDE for Java Developers (or a text editor of your choice).
 
 ### Installing
 
 The repository can be cloned directly to your local machine using:
 
 ```shell
-git clone
+git clone https://github.com/jacobwinkworth-qa/ims.git
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
+To run the the code:
+```shell
+java -jar docs/ims-0.0.1-jar-with-dependencies.jar
+```
 
 ## Running the tests
 
-Explain how to run the automated tests for this system. Break down into which tests and what they do
-
 ### Unit Tests 
 
-Explain what these tests test, why and how to run them
-
-```
-Give an example
-```
-
-### Integration Tests 
-Explain what these tests test, why and how to run them
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
+To run the tests, open the project in Eclipse, right click the root folder -> run as -> JUnit test
 
 ## Built With
 
@@ -74,6 +53,4 @@ This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Thank you to all those at QC Academy who helped me along the way.
