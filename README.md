@@ -9,11 +9,16 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Latest Java versioning
+Latest Java versioning (Java 14)
+A local or cloud-hosted MySQL 5.7 server: the db.url variable of the db.properties file in both the src/main/resources and src/test/resources should be changed to fit this.
 
 ### Installing
 
-No installation is required.
+The repository can be cloned directly to your local machine using:
+
+```shell
+git clone
+```
 
 End with an example of getting some data out of the system or using it for a little demo
 
