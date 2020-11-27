@@ -10,7 +10,8 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 * Latest Java versioning (Java 14)
-* A local or cloud-hosted MySQL 5.7 server: the db.url variable of the db.properties file in both the src/main/resources and src/test/resources should be changed to fit this.
+* A local or cloud-hosted MySQL 5.7 server:
+** The db.url variable of the db.properties file in both the src/main/resources and src/test/resources should be changed to fit this.
 * Eclipse Eclipse IDE for Java Developers (or a text editor of your choice).
 
 ### Installing
