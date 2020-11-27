@@ -10,6 +10,9 @@ VALUES ('ball', 9.99);
 INSERT INTO items (name, value)
 VALUES ('shoe', 5.0);
 
+INSERT INTO items (name, value)
+VALUES ('frisbee', 10.0);
+
 INSERT INTO orders (customer_id)
 VALUES (1);
 INSERT INTO orders_items (order_id, item_id, quantity)

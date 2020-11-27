@@ -75,6 +75,28 @@ public class OrderDAOTest {
 		assertEquals(updated, DAO.update(updated));
 
 	}
+	
+	@Test
+	public void testAddLine() {
+		Customer customer = new Customer(1l);
+		final long orderId = 1l, itemId = 3l, quantity = 1l;
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		items.put(new Item(2l, "shoe", 5.0), 1l);
+		items.put(new Item(itemId, "frisbee", 10.0), quantity);
+		final Order updated = new Order(orderId, customer, items);
+		assertEquals(updated, DAO.addLine(orderId, itemId, quantity));
+	}
+	
+	@Test
+	public void testDeleteLine() {
+		Customer customer = new Customer(1l);
+		final long orderId = 1l, itemId = 2l;
+		HashMap<Item, Long> items = new HashMap<>();
+		items.put(new Item(1l, "ball", 9.99), 1l);
+		final Order updated = new Order(orderId, customer, items);
+		assertEquals(updated, DAO.deleteLine(orderId, itemId));
+	}
 
 	@Test
 	public void testDelete() {
